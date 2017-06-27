@@ -8,7 +8,7 @@
     
     <mvc:annotation-driven />
     
-    <context:component-scan base-package="ueditor.controller">
+    <context:component-scan base-package="controller">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
     </context:component-scan>
     

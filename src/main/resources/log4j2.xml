@@ -10,7 +10,7 @@
             <appender-ref ref="Console" />
         </root>
         <logger name="org.springframework" level="INFO"></logger>
-        <Logger name="com.baidu" level="DEBUG" additivity="false">
+        <Logger name="ueditor" level="DEBUG" additivity="false">
             <AppenderRef ref="Console" />
         </Logger>
     </loggers>

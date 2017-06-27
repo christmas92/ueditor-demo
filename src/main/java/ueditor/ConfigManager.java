@@ -1,19 +1,17 @@
 package ueditor;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.io.InputStream;
+
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import ueditor.define.ActionMap;
 
@@ -26,12 +24,9 @@ import ueditor.define.ActionMap;
 public final class ConfigManager {
 
 	private static final Logger logger = LoggerFactory.getLogger(ConfigManager.class);
-
+	
 	private final String rootPath;
-	private final String originalPath;
-	private final String contextPath;
-	private static final String configFileName = "config.json";
-	private String parentPath = null;
+	private static final String configFileName = "/ueditor.config.json";
 	private JSONObject jsonConfig = null;
 	// 涂鸦上传filename定义
 	private final static String SCRAWL_FILE_NAME = "scrawl";
@@ -41,20 +36,9 @@ public final class ConfigManager {
 	/*
 	 * 通过一个给定的路径构建一个配置管理器， 该管理器要求地址路径所在目录下必须存在config.properties文件
 	 */
-	private ConfigManager(String rootPath, String contextPath, String uri) throws FileNotFoundException, IOException {
-
-		rootPath = rootPath.replace("\\", "/");
-
+	private ConfigManager(String rootPath) throws IOException {
 		this.rootPath = rootPath;
-		this.contextPath = contextPath;
-
-		if (contextPath.length() > 0) {
-			this.originalPath = this.rootPath + uri.substring(contextPath.length());
-		} else {
-			this.originalPath = this.rootPath + uri;
-		}
 		this.initEnv();
-
 	}
 
 	/**
@@ -68,11 +52,11 @@ public final class ConfigManager {
 	 *            当前访问的uri
 	 * @return 配置管理器实例或者null
 	 */
-	public static ConfigManager getInstance(String rootPath, String contextPath, String uri) {
-
+	public static ConfigManager getInstance(String rootPath) {
 		try {
-			return new ConfigManager(rootPath, contextPath, uri);
+			return new ConfigManager(rootPath);
 		} catch (Exception e) {
+			logger.debug(e.getMessage());
 			return null;
 		}
 
@@ -157,22 +141,9 @@ public final class ConfigManager {
 
 	}
 
-	private void initEnv() throws FileNotFoundException, IOException {
+	private void initEnv() throws IOException{
 
-		File file = new File(this.originalPath);
-
-		if (!file.isAbsolute()) {
-			file = new File(file.getAbsolutePath());
-		}
-
-		this.parentPath = file.getParent();
-
-		logger.debug(this.originalPath);
-		logger.debug(this.parentPath);
-		logger.debug(this.getConfigPath());
-		String configContent = this.readFile(this.getConfigPath());
-
-		System.out.println(configContent);
+		String configContent = this.readFile();
 		try {
 			JSONObject jsonConfig = new JSONObject(configContent);
 			this.jsonConfig = jsonConfig;
@@ -180,13 +151,6 @@ public final class ConfigManager {
 			this.jsonConfig = null;
 		}
 
-	}
-
-	private String getConfigPath() {
-		// return this.parentPath + File.separator +
-		// ConfigManager.configFileName;
-		return this.rootPath + File.separator + "WEB-INF" + File.separator + "classes" + File.separator
-				+ ConfigManager.configFileName;
 	}
 
 	private String[] getArray(String key) {
@@ -202,36 +166,16 @@ public final class ConfigManager {
 
 	}
 
-	private String readFile(String path) throws IOException {
-
-		StringBuilder builder = new StringBuilder();
-
-		try {
-
-			InputStreamReader reader = new InputStreamReader(new FileInputStream(path), "UTF-8");
-			BufferedReader bfReader = new BufferedReader(reader);
-
-			String tmpContent = null;
-
-			while ((tmpContent = bfReader.readLine()) != null) {
-				builder.append(tmpContent);
-			}
-
-			bfReader.close();
-
-		} catch (UnsupportedEncodingException e) {
-			// 忽略
-		}
-
-		return this.filter(builder.toString());
-
+	private String readFile() throws IOException {
+		InputStream input = ConfigManager.class.getResourceAsStream(configFileName);
+		Assert.notNull(input, "can't find ueditor.config.json");
+		String configContent = IOUtils.toString(input, "utf-8");
+		return this.filter(configContent);
 	}
 
 	// 过滤输入字符串, 剔除多行注释以及替换掉反斜杠
 	private String filter(String input) {
-
 		return input.replaceAll("/\\*[\\s\\S]*?\\*/", "");
-
 	}
 
 }

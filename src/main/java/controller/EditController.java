@@ -22,9 +22,7 @@ public class EditController {
 	@RequestMapping("config")
 	@ResponseBody
 	public Object config(HttpServletRequest request){
-		String path = request.getSession().getServletContext().getRealPath("/");
-		System.out.println(path);
-		return new ActionEnter( request, path).exec();
+		return new ActionEnter( request ).exec();
 	}
 	
 	
