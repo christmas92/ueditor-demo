@@ -143,7 +143,7 @@ public final class ConfigManager {
 
 	private void initEnv() throws IOException{
 
-		String configContent = this.readFile();
+		String configContent = this.readFile();  //得到配置文件内容
 		try {
 			JSONObject jsonConfig = new JSONObject(configContent);
 			this.jsonConfig = jsonConfig;
@@ -166,8 +166,9 @@ public final class ConfigManager {
 
 	}
 
+	//读取配置文件内容
 	private String readFile() throws IOException {
-		InputStream input = ConfigManager.class.getResourceAsStream(configFileName);
+		InputStream input = ConfigManager.class.getResourceAsStream(configFileName);  //在classpath目录下获取配置文件内容
 		Assert.notNull(input, "can't find ueditor.config.json");
 		String configContent = IOUtils.toString(input, "utf-8");
 		return this.filter(configContent);

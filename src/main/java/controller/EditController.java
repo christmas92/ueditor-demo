@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ueditor.ActionEnter;
+import ueditor.define.UploadType;
 
 
 /**
@@ -22,7 +23,9 @@ public class EditController {
 	@RequestMapping("config")
 	@ResponseBody
 	public Object config(HttpServletRequest request){
-		return new ActionEnter( request ).exec();
+		String rootPath = request.getServletContext().getRealPath("/");
+		System.out.println(rootPath);
+		return new ActionEnter(request, rootPath, UploadType.ALIYUN_OSS).exec();
 	}
 	
 	

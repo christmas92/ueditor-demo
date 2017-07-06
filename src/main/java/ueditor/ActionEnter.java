@@ -8,6 +8,7 @@ import ueditor.define.ActionMap;
 import ueditor.define.AppInfo;
 import ueditor.define.BaseState;
 import ueditor.define.State;
+import ueditor.define.UploadType;
 import ueditor.hunter.FileManager;
 import ueditor.hunter.ImageHunter;
 import ueditor.upload.Uploader;
@@ -21,11 +22,14 @@ public class ActionEnter {
 	private String actionType = null;
 
 	private ConfigManager configManager = null;
+	
+	private int uploadType = UploadType.LOCAL_SERVER;  //默认上传本地服务器
 
-	public ActionEnter(HttpServletRequest request) {
+	public ActionEnter(HttpServletRequest request, String rootPath, int uploadType) {
 		this.request = request;
-		this.rootPath = request.getServletContext().getRealPath("/");
+		this.rootPath = rootPath;
 		this.actionType = request.getParameter("action");
+		this.uploadType = uploadType;
 		this.configManager = ConfigManager.getInstance(this.rootPath);
 	}
 	
@@ -73,7 +77,7 @@ public class ActionEnter {
 		case ActionMap.UPLOAD_VIDEO:
 		case ActionMap.UPLOAD_FILE:
 			conf = this.configManager.getConfig(actionCode);
-			state = new Uploader(request, conf).doExec();
+			state = new Uploader(request, conf, uploadType).doExec();
 			break;
 
 		case ActionMap.CATCH_IMAGE:
