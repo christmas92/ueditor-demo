@@ -2,12 +2,14 @@
 /Users/chenyifei/company/git/ueditor-demo/src/main/java/ueditor/define/BaseState.java
 /Users/chenyifei/company/git/ueditor-demo/src/main/java/ueditor/define/ActionState.java
 /Users/chenyifei/company/git/ueditor-demo/src/main/java/ueditor/upload/BinaryUploader.java
+/Users/chenyifei/company/git/ueditor-demo/src/main/java/aliyun/oss/AliyunOSSManager.java
 /Users/chenyifei/company/git/ueditor-demo/src/main/java/ueditor/hunter/ImageHunter.java
 /Users/chenyifei/company/git/ueditor-demo/src/main/java/ueditor/ActionEnter.java
-/Users/chenyifei/company/git/ueditor-demo/src/main/java/te/ActionEnter.java
-/Users/chenyifei/company/git/ueditor-demo/src/main/java/te/ConfigManager.java
+/Users/chenyifei/company/git/ueditor-demo/src/main/java/ueditor/upload/AliyunUploader.java
+/Users/chenyifei/company/git/ueditor-demo/src/main/java/ueditor/UeditorService.java
 /Users/chenyifei/company/git/ueditor-demo/src/main/java/ueditor/define/MIMEType.java
 /Users/chenyifei/company/git/ueditor-demo/src/main/java/ueditor/Encoder.java
+/Users/chenyifei/company/git/ueditor-demo/src/main/java/commons/utils/SpringUtils.java
 /Users/chenyifei/company/git/ueditor-demo/src/main/java/ueditor/define/FileType.java
 /Users/chenyifei/company/git/ueditor-demo/src/main/java/ueditor/define/State.java
 /Users/chenyifei/company/git/ueditor-demo/src/main/java/ueditor/upload/StorageManager.java
@@ -18,4 +20,5 @@
 /Users/chenyifei/company/git/ueditor-demo/src/main/java/ueditor/define/ActionMap.java
 /Users/chenyifei/company/git/ueditor-demo/src/main/java/ueditor/ConfigManager.java
 /Users/chenyifei/company/git/ueditor-demo/src/main/java/controller/EditController.java
+/Users/chenyifei/company/git/ueditor-demo/src/main/java/ueditor/define/UploadType.java
 /Users/chenyifei/company/git/ueditor-demo/src/main/java/ueditor/upload/Base64Uploader.java

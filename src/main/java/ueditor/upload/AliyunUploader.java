@@ -18,6 +18,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 
 import aliyun.oss.AliyunOSSManager;
+import commons.utils.SpringUtils;
 import ueditor.PathFormat;
 import ueditor.define.AppInfo;
 import ueditor.define.BaseState;
@@ -61,37 +62,17 @@ public class AliyunUploader {
 
 			String originFileName = fileStream.getName();
 			String suffix = FileType.getSuffixByFilename(originFileName);
-
-			long maxSize = ((Long) conf.get("maxSize")).longValue();
-
 			if (!validType(suffix, (String[]) conf.get("allowFiles"))) {
 				return new BaseState(false, AppInfo.NOT_ALLOW_FILE_TYPE);
 			}
-
+					
 			InputStream is = fileStream.openStream();
-			String fileName = getFileName(suffix);
-			File tmpFile = new File(fileName);
-			long fileSize = tmpFile.length();
-			FileOutputStream fos = new FileOutputStream(tmpFile);
-			IOUtils.copy(is, fos);
-			if (fileSize > maxSize) {
-				tmpFile.delete();
-				return new BaseState(false, AppInfo.MAX_SIZE);
-			}
+			long maxSize = ((Long) conf.get("maxSize")).longValue();
+			String fileName = createFileName(suffix);
+			State storageState = uploadFile(is, fileName, maxSize);
 			
-			AliyunOSSManager.putObject(tmpFile);
-			tmpFile.delete();
-			
-			State storageState = new BaseState(true);
-			storageState.putInfo("size", fileSize);
-			storageState.putInfo("title", fileName);
-
-			if (storageState.isSuccess()) {
-				storageState.putInfo("url", AliyunOSSManager.bucketUrl + fileName);
-				storageState.putInfo("type", suffix);
-				storageState.putInfo("original", originFileName);
-			}
-
+			storageState.putInfo("type", suffix);
+			storageState.putInfo("original", originFileName);
 			return storageState;
 		} catch (FileUploadException e) {
 			return new BaseState(false, AppInfo.PARSE_REQUEST_ERROR);
@@ -99,8 +80,31 @@ public class AliyunUploader {
 		}
 		return new BaseState(false, AppInfo.IO_ERROR);
 	}
+	
+	private static State uploadFile(InputStream is, String fileName, long maxSize) throws IOException{
+		
+		File tmpFile = new File(fileName);
+		FileOutputStream fos = new FileOutputStream(tmpFile);
+		IOUtils.copy(is, fos);
+		long fileSize = tmpFile.length();
+		if (fileSize > maxSize) {
+			tmpFile.delete();
+			return new BaseState(false, AppInfo.MAX_SIZE);
+		}
+		
+		AliyunOSSManager ossManager = (AliyunOSSManager) SpringUtils.getBean("aliyunOSSManager"); //注入AliyunOSSManager
+		ossManager.putObject(tmpFile);
+		tmpFile.delete();
+		
+		State storageState = new BaseState(true);
+		storageState.putInfo("size", fileSize);
+		storageState.putInfo("title", fileName);
+		storageState.putInfo("url", ossManager.getBucketUrl() + fileName);
 
-	private static String getFileName(String suffix) {
+		return storageState;
+	}
+
+	private static String createFileName(String suffix) {
 		String prefix = PathFormat.parse("{time}{rand:6}");
 		return prefix + suffix;
 	}
